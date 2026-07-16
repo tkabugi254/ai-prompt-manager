@@ -1,15 +1,19 @@
 from flask import Flask
-from .auth.routes import auth_bp
-from .prompts.routes import prompts_bp
+from flask_jwt_extended import JWTManager
+
+jwt = JWTManager()
 
 def create_app():
     app = Flask(__name__)
 
-    # simple secret key (no config file needed)
-    app.config["SECRET_KEY"] = "supersecretkey"
+    app.config["JWT_SECRET_KEY"] = "super-secret-key"
 
-    # Register Blueprints
+    jwt.init_app(app)
+
+    from app.auth.routes import auth_bp
+    from app.prompts.routes import prompts_bp
+
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
-    app.register_blueprint(prompts_bp, url_prefix="/api")
+    app.register_blueprint(prompts_bp, url_prefix="/api/prompts")
 
     return app
